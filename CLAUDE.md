@@ -1,0 +1,1 @@
+The specs directory defines the design and structure of the library in a very detailed, it should be used by ai agents for better understanding and use of the library, all concrete info about the library should be in the specs dir, all plans and non absolute information should be stored in the docs dir.
