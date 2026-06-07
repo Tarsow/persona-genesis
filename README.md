@@ -61,6 +61,32 @@ assert draft.persona.identity.given_name_status == "real"
 print(draft.persona.model_dump_json())             # JSON-serializable contract
 ```
 
+## Quickstart — generate a persona (offline, deterministic)
+
+The **structured layer** fills `identity`/`location`/`work`/`device` with real,
+coherent, reproducible data — no API key required. Narrative sections
+(personality/appearance/backstory/voice) need an LLM provider (a later phase), so
+`generate_structured` returns a `PartialPersona`.
+
+```python
+from persona_genesis import Config, PersonaGenerator, StructuredConstraints
+
+gen = PersonaGenerator(Config())
+p = gen.generate_structured(seed=42, locale="pt_BR",
+                            constraints=StructuredConstraints(age_range=(28, 35), gender="female"))
+
+print(p.identity.full_name, p.identity.dob, f"[{p.identity.full_name_status}]")  # ... [fake]
+print(p.location.city, p.location.region, p.location.timezone, f"[{p.location.country_status}]")  # real, coherent [gen]
+print(p.work.occupation, "@", p.work.employer, p.work.seniority)  # age-coherent seniority
+print(p.device.primary_device, p.device.os, p.device.user_agent)  # coherent UA
+assert p.contact.phone is None and p.contact.email is None        # real-only, never fabricated
+```
+
+Pass an `ip` constraint (with a `GeoIP2Locator` built from a caller-supplied
+GeoLite2-City `.mmdb`) to derive the location from a real IP. `fill_structured(builder)`
+generates only the structured sections a builder is missing, leaving caller-set
+fields untouched.
+
 ## Quickstart — persist to PostgreSQL + pgvector
 
 Enable the extension once on your database:
@@ -150,12 +176,16 @@ Embedding lengths you pass must match the corresponding `*_embedding_dim`.
 **Implemented:** the full Pydantic contract with `_status` provenance, real-only
 Contact/Location, standalone `Image`/`Audio`/`Video`, biometric `Face`/`Body`/
 `VoicePrint`, RAG `Document`, `Relationship`, `Account` vault, `PartialPersona`,
-`PersonaDraft`, `PersonaBuilder`, content-hashed media storage, and the PostgreSQL +
-pgvector persistence layer (async + sync, vector search, encrypted vault).
+`PersonaDraft`, `PersonaBuilder`, content-hashed media storage, the PostgreSQL +
+pgvector persistence layer (async + sync, vector search, encrypted vault), and the
+**structured generation layer** (`PersonaGenerator.generate_structured`/
+`fill_structured` for identity/location/work/device, with GeoIP IP→location).
 
 **Not yet built (see [Roadmap](#roadmap)):**
-- **AI generation** — `PersonaGenerator` (structured/narrative/visual layers) is not
-  implemented; you supply fields and embeddings yourself.
+- **Narrative & visual generation** — the LLM-driven sections (personality/appearance/
+  backstory/voice) and image/biometric generation behind the `LLMProvider`/
+  `ImageProvider` protocols. `generate()`/`agenerate()` raise until a provider is
+  wired; `generate_structured()` works today.
 - **AI extraction** — `extraction.extract_faces/transcribe/describe_image/embed_text/…`
   exist as a fixed seam but raise `NotImplementedError`. So embeddings, transcripts,
   descriptions, and NSFW scores are caller-supplied today.
@@ -168,16 +198,15 @@ round-trip.
 
 ## Roadmap
 
-Planned, designed in [`docs/roadmap.md`](docs/roadmap.md):
+Phased plan in [`docs/roadmap.md`](docs/roadmap.md). Done: Phase 0 (foundation) and
+Phase 1 (structured generation). Next:
 
-1. **AI generation** — implement `PersonaGenerator.agenerate()`/`generate()` and the
-   structured + narrative + visual layers with a coherence pass, producing
-   `gen`/`fake`-tagged fields.
-2. **Embedding-from-media** — let `add_face(image=…)`, `add_voice(audio=…)`, and
-   `add_document(file=…)` extract embeddings from raw media via the extraction seam,
-   not just accept pre-computed vectors.
-3. **Database deduplication** — dedupe images, audio, video, and documents in the DB
-   by content hash so identical binaries map to a single row (shared across personas).
+1. **Narrative layer (Phase 2)** — LLM-generated personality/appearance/backstory/voice
+   with a coherence pass, making `agenerate()` return a complete `Persona`.
+2. **Visual & biometric generation (Phase 3)** — face/body images + embeddings.
+3. **AI extraction (Phase 4)** — implement the extraction seam and
+   `add_face(image=…)`/`add_voice(audio=…)`/`add_document(file=…)`.
+4. **Database deduplication (Phase 5)** — dedupe media/documents by content hash.
 
 ## Development
 

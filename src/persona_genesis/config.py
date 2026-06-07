@@ -46,6 +46,7 @@ class Config(BaseModel):
     body_embedding_dim: int = 2048
     voice_embedding_dim: int = 192
     document_embedding_dim: int = 1536
+    geoip_database_path: str | None = None  # path to a caller-provided GeoLite2-City.mmdb
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> "Config":

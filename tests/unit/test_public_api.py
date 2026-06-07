@@ -41,3 +41,25 @@ def test_exceptions_reachable() -> None:
 
     for exc in (PersonaGenerationError, CoherenceError, ProviderError, ConfigError):
         assert issubclass(exc, PersonaGenesisError)
+
+
+def test_generator_symbols_exported() -> None:
+    from persona_genesis import (
+        GeoIP2Locator,
+        GeoLocation,
+        GeoLocator,
+        ImageProvider,
+        LLMProvider,
+        PersonaGenerator,
+        StructuredConstraints,
+    )
+
+    assert PersonaGenerator.__name__ == "PersonaGenerator"
+    assert {
+        GeoIP2Locator,
+        GeoLocation,
+        GeoLocator,
+        ImageProvider,
+        LLMProvider,
+        StructuredConstraints,
+    }

@@ -1,133 +1,138 @@
 # persona-genesis — Roadmap
 
-Forward-looking design notes for the next initiatives. These are **planning
-sketches**, not final specs — each should get a proper brainstorm → spec → plan pass
-(per the project workflow) before implementation. Concrete, locked design lives in
-`specs/`; this file captures intent, direction, and open questions.
+The phased plan from the current foundation to a full persona generator. Each phase
+produces working, tested software on its own. Concrete, locked design lives in
+`specs/`; this file is the map and the forward-looking intent.
 
-Status legend: 🔭 designed-only · 🚧 in progress · ✅ done.
-
----
-
-## 1. AI generation (`PersonaGenerator`) 🔭
-
-**Goal.** Generate complete, coherent personas instead of hand-building them. The
-original library design (`specs/2026-06-01-persona-genesis-library-design.md`)
-specified this; it was deferred while the data layer landed.
-
-**Shape.**
-- `PersonaGenerator(config, llm=…, image=…)` with `agenerate(seed, constraints,
-  include=…)` (async-first) and a thin `generate()` sync wrapper.
-- `afill(builder)` / `fill(builder)` — generate only the sections in
-  `builder.missing()`, treating caller-set fields as ground truth, returning a
-  complete strict `Persona`.
-- Layers: **structured** (Faker/Polyfactory/fake-useragent → identity, location,
-  work, device — deterministic from `seed`), **narrative** (LLM → personality,
-  appearance text, backstory, voice text), **visual/biometric** (image + embedding
-  providers → faces/bodies/voices), and a **coherence pass** (age vs. seniority,
-  locale vs. name, UA vs. device, appearance text vs. structured fields) with one
-  retry.
-
-**Provenance integration (already in the contract).** Generated fields must set
-`_status` per the realism rule already implemented: caller-set → `real`, derived
-from real data (address from IP, real geo) → `gen`, LLM narrative → `gen`, AI
-embeddings → `gen`, Faker-invented (name/dob/fake phone/email/device) → `fake`. A
-generated persona keeps `Contact == Contact()` and `location.street/postal_code`
-empty unless an IP is supplied.
-
-**Provider seam.** `LLMProvider` / `ImageProvider` protocols with built-in adapters
-(Anthropic, OpenAI, fal, replicate, local diffusers) behind optional extras. Config
-already carries `llm`/`image` blocks.
-
-**Open questions.**
-- Determinism contract for narrative/visual layers (best-effort; `RecordedProvider`
-  for tests?).
-- Does `agenerate` persist, or only return the `Persona`/`PersonaDraft` for the
-  caller to `save_draft`? (Likely the latter — keep the generator pure.)
-- How constraints (`age_range`, `device`, locale) flow into each layer.
+**Status legend:** ✅ done · 🚧 in progress · 🔭 designed/next · ⏳ planned · 🔒 blocked
+on external setup (API keys / models / data files).
 
 ---
 
-## 2. Embedding-from-media in the builder 🔭
+## Phase 0 — Foundation ✅
 
-**Goal.** Today `add_face`, `add_voice`, and `add_document` accept **pre-computed**
-embeddings. Allow them to also accept **raw media** and derive the embedding via the
-extraction seam (`extraction.py`, currently `NotImplementedError` stubs).
+The DB-free contract and the persistence layer. Shipped on `master`.
 
-**Target API (additive — keep the pre-computed path).**
-```python
-b.add_face(image=img)                 # PIL/bytes → store image, run extract_faces → Face(s) + link
-b.add_face(embedding=[...])           # unchanged: caller-supplied vector
-b.add_voice(audio=data, media_type="audio/wav")   # → transcribe + extract_voice → VoicePrint + link
-b.add_document(file=path_or_bytes)    # extract text → embed_text → Document.embedding
-b.add_document(content="...", embedding=[...])     # unchanged
-```
-- `add_face(image=…)` should also store the image as an `Image` row and create the
-  `image↔face` link (one call attaches the photo and its biometric).
-- `add_voice(audio=…)` stores the `Audio`, transcribes to `text`, and links
-  `audio↔voice`.
-- Extraction-produced artifacts are tagged `status="gen"`; caller-supplied stay
-  `real`.
-- The existing `add_image(..., extract=True)` / `add_audio(..., extract=True)` flags
-  already model the auto-extract path; unify the two so `add_face(image=…)` and
-  `add_image(extract=True)` share one extraction code path.
+- Pydantic contract with field-level `_status` provenance (`real`/`gen`/`fake`);
+  real-only `Contact`/`Location`.
+- Decoupled entities: standalone `Image`/`Audio`/`Video`; biometric `Face`/`Body`/
+  `VoicePrint`; RAG `Document`; `Relationship`; `Account` vault.
+- `PartialPersona`, `PersonaDraft`, `PersonaBuilder`; content-hashed media storage.
+- PostgreSQL + `pgvector` persistence: ORM factory (dims from `Config`), engine,
+  async + sync repository, Fernet-encrypted vault — integration-tested on a live DB.
+- AI extraction **seam** (`extraction.py`) — signatures only, `NotImplementedError`.
 
-**Depends on.** The extraction implementations (initiative tied to #1's visual
-layer): `extract_faces`, `extract_voice`, `transcribe`, `describe_image`,
-`score_nsfw`, `embed_text`, plus extraction-provider config in `Config`.
-
-**Open questions.**
-- Sync vs async: extraction may call remote models. The builder is currently sync;
-  either add async builder methods (`aadd_face`) or run extraction at `save`/generate
-  time rather than in `add_*`.
-- Where extraction providers are configured (new `Config.extraction` block:
-  face/voice/caption/embedding model + endpoint + key).
-- Multiple faces in one image → multiple `Face` rows + links (already supported by
-  the schema).
+Specs: `2026-06-01`, `2026-06-02`, `2026-06-04`. Plans: `docs/superpowers/plans/`.
 
 ---
 
-## 3. Database deduplication 🔭
+## Phase 1 — Structured generation ✅ (offline, no external API)
 
-**Goal.** Identical binaries and documents should map to a **single row**, shared
-across personas — not duplicated on every attach. On-disk storage already dedupes
-(content-hash filename: `media/storage.store_media`), so two identical uploads share
-one file; the database layer should mirror that.
+The deterministic, offline half of AI generation. Spec:
+`specs/2026-06-06-persona-genesis-structured-generation-design.md`.
 
-**Approach.**
-- **Media (images/audio/video).** The stored `file_path` is `"<kind>/<sha256>.<ext>"`
-  — it already *is* a content key. Add a UNIQUE index on `file_path` per media table
-  and make `add_image/add_audio/add_video` (and `save_draft`) **upsert by
-  `file_path`**: if a row with that path exists, reuse its id and link, don't insert
-  a duplicate. Because media is decoupled (no persona FK) and linked via junctions,
-  the same image row can already be linked to many faces/personas — dedup just stops
-  duplicate rows.
-- **Documents.** Add a `content_hash` column (sha256 of `content`, or of
-  `content` + normalized `metadata`), UNIQUE; `add_document` reuses an existing
-  document and adds the `document↔persona` link instead of inserting a copy.
-- **Embeddings (faces/bodies/voices).** Exact-byte dedup is wrong for vectors
-  (near-duplicates differ). Dedup these by their **source media hash** when extracted
-  via #2 (same photo → reuse the face row), not by embedding equality. Approximate
-  "is this the same person/voice" stays a *search* (`search_faces`), not a dedup.
-
-**Open questions.**
-- Dedup scope: global (one row for identical bytes anywhere) vs per-persona. Global
-  matches the decoupled/shareable design — confirm that's intended.
-- Migration: the lands-now schema uses `create_all`; adding UNIQUE indexes +
-  `content_hash` is the first real **Alembic** migration (already a noted follow-up).
-- Concurrency: upsert-by-hash needs `INSERT … ON CONFLICT DO NOTHING/UPDATE` (psycopg
-  supports it) to be race-safe under concurrent writers.
-- Reference counting / GC: when the last link to a deduped media row is removed,
-  should the row and on-disk file be deleted? (Probably a separate sweep, not inline.)
+- `PersonaGenerator(config, *, geolocator=None, llm=None, image=None)`.
+  - `agenerate_structured(seed, locale=None, *, constraints=None) -> PartialPersona`
+    (+ sync `generate_structured`) — fills `identity`, `location`, `work`, `device`;
+    leaves `contact = Contact()` and narrative sections `None`.
+  - `afill_structured(builder)` (+ sync) — generate only the structured sections in
+    `builder.missing()`, never overwriting caller-set fields.
+  - `agenerate(...) -> Persona` exists but raises `ConfigError` until an LLM provider
+    is wired (Phase 2).
+- Section generators: `identity` (Faker, locale-aware), `location` (bundled real-city
+  dataset, or GeoIP from an `ip` constraint), `work` (curated occupation→industry +
+  Faker employer + age-coherent seniority), `device` (curated `ua_pool` profile).
+- Bundled data assets: `data/locations/<locale>.json`, `data/ua_pool.json`,
+  `data/occupations.json`.
+- GeoIP: `GeoLocator` protocol + `GeoIP2Locator` (caller supplies the GeoLite2
+  `.mmdb` via `Config.geoip_database_path`; `geoip2` is the `[geoip]` extra).
+- `LLMProvider` / `ImageProvider` **protocols** defined as the Phase 2/3 seam (no
+  adapters yet).
+- Deterministic from `seed`; coherence by construction (age → eligible seniority).
 
 ---
 
-## Cross-cutting follow-ups (already noted in specs)
+## Phase 2 — Narrative layer (LLM) 🔭 🔒 (next; needs an LLM provider)
 
-- Alembic migrations (replaces `create_all`) — prerequisite for #3.
-- pgvector ANN index tuning (IVFFlat/HNSW) once data volumes are known.
-- `Video` extraction composing the image (per-frame faces) + audio (track voices)
+Generate `personality`, `appearance` (text), `backstory`, `voice` (text) from an LLM,
+feeding the structured fields as ground truth.
+
+- Implement the narrative generators behind `LLMProvider`; `agenerate()` becomes
+  functional and returns a complete strict `Persona`.
+- **Coherence pass**: age vs. seniority, locale vs. name/voice, UA vs. device,
+  appearance text vs. structured fields, backstory ordering — one retry on violation,
+  else `CoherenceError`.
+- Narrative fields tagged `status="gen"`.
+- **Provider adapters** (own sub-step): Anthropic, OpenAI, openai-compat (Ollama/
+  vLLM/OpenRouter) behind optional extras. *Blocked on API keys to verify.*
+- `RecordedProvider` for deterministic snapshot tests without per-run cost.
+
+## Phase 3 — Visual & biometric generation ⏳ 🔒
+
+Generate face/body imagery and their embeddings behind `ImageProvider`.
+
+- Visual layer: face image (and optional body image) from the appearance description;
+  saved to disk with an `ai_generated` `MediaOrigin`; `Face`/`Body` embeddings
+  recorded. `create_image()` (reference-conditioned) per the 2026-06-02 design.
+- Image adapters: fal, replicate, OpenAI images, local diffusers (`[local-image]`).
+  *Blocked on provider credentials.*
+
+## Phase 4 — AI extraction ⏳ 🔒
+
+Implement the `extraction.py` stubs and the embedding-from-media builder API.
+
+- `extract_faces` (ArcFace/FaceNet), `extract_body` (person-ReID), `extract_voice`
+  (ECAPA-TDNN), `transcribe` (ASR + diarization), `describe_image` (CLIP/caption),
+  `score_nsfw`, `embed_text`.
+- Builder embedding-from-media (roadmap item formerly #2): `add_face(image=…)`,
+  `add_voice(audio=…)`, `add_document(file=…)` derive embeddings via the seam, store
+  the source media, and create the links; unify with the existing `extract=True`
+  path. Extraction artifacts tagged `status="gen"`.
+- Extraction-provider config block in `Config`. *Blocked on models.*
+
+## Phase 5 — Database deduplication ⏳
+
+Identical binaries/documents map to a single shared row (on-disk storage already
+content-hashes).
+
+- Media: UNIQUE index on `file_path` (already `<kind>/<sha256>.<ext>`); `add_image/
+  audio/video` and `save_draft` upsert-by-hash (`INSERT … ON CONFLICT`) and just add
+  links. Shared across personas via the existing junctions.
+- Documents: a `content_hash` column + UNIQUE; reuse the existing document, add the
+  `document↔persona` link.
+- Embeddings: dedupe by *source media hash* (same photo → reuse the `Face` row), not
+  by vector equality (near-duplicates differ; similarity stays a `search`).
+- Open: global vs per-persona scope (global matches the decoupled design); GC of
+  orphaned rows/files; first real Alembic migration.
+
+## Phase 6 — CLI ⏳
+
+`persona-genesis generate / batch / image / validate` wrapping the generator,
+repository, and media save. The CLI is the only filesystem-touching surface beyond
+media storage.
+
+---
+
+## Cross-cutting follow-ups
+
+- **Alembic migrations** (replace `create_all`) — prerequisite for Phase 5.
+- **Video extraction** composing the image (per-frame faces) + audio (track voices)
   pipelines.
-- The `get_partial`/`get` round-trip of *partially*-set sections (builder produces
-  incomplete strict-model sections; reader currently expects complete sections — use
-  `model_construct` on read or relax section validation). See the project memory note.
+- **Partial-section round-trip**: builder produces incomplete strict-model sections;
+  `get`/`get_partial` currently expect complete sections — read with `model_construct`
+  or relax section validation. (See project memory note.)
+- **pgvector ANN index tuning** (IVFFlat/HNSW) once data volumes are known.
+
+---
+
+## Dependency order
+
+```
+Phase 0 (done)
+   └─ Phase 1  structured generation        (offline, now)
+        └─ Phase 2  narrative (LLM)          (needs LLM key)
+             └─ Phase 3  visual/biometric    (needs image key)
+   └─ Phase 4  AI extraction                 (needs models; enables builder add_*(media=…))
+   └─ Phase 5  DB dedup                      (needs Alembic)
+   └─ Phase 6  CLI                           (after generator usable)
+```

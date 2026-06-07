@@ -16,6 +16,12 @@ from persona_genesis.exceptions import (
     PersonaGenesisError,
     ProviderError,
 )
+from persona_genesis.generators.constraints import StructuredConstraints
+from persona_genesis.geo.base import GeoLocation, GeoLocator
+from persona_genesis.geo.geoip2_locator import GeoIP2Locator
+from persona_genesis.orchestrator import PersonaGenerator
+from persona_genesis.providers.image import ImageProvider
+from persona_genesis.providers.llm import LLMProvider
 from persona_genesis.schema import (
     Account,
     Appearance,
@@ -62,10 +68,15 @@ __all__ = [
     "Document",
     "Education",
     "Face",
+    "GeoIP2Locator",
+    "GeoLocation",
+    "GeoLocator",
     "Identity",
     "Image",
     "ImageConfig",
+    "ImageProvider",
     "LLMConfig",
+    "LLMProvider",
     "Location",
     "MediaOrigin",
     "OceanScores",
@@ -74,6 +85,7 @@ __all__ = [
     "PersonaBuilder",
     "PersonaDraft",
     "PersonaGenerationError",
+    "PersonaGenerator",
     "PersonaGenesisError",
     "PersonaMetadata",
     "PersonaRepository",
@@ -81,6 +93,7 @@ __all__ = [
     "ProviderError",
     "Relationship",
     "Status",
+    "StructuredConstraints",
     "Video",
     "Voice",
     "VoicePrint",

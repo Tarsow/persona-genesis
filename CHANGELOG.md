@@ -31,6 +31,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   deferred (raise `NotImplementedError`).
 - `Config` gains `database_url`, `vault_key`, `media_dir`, and embedding-dim
   fields (`face`/`body`/`voice`/`document`).
+- Structured generation (offline, deterministic): `PersonaGenerator` with
+  `generate_structured`/`agenerate_structured` and `fill_structured`/
+  `afill_structured`, filling `identity`/`location`/`work`/`device` (contact stays
+  empty) from Faker + bundled real datasets (cities, `ua_pool`, occupations), with
+  age-coherent seniority and coherent device profiles. IP→location via a `GeoLocator`
+  protocol + `GeoIP2Locator` (`[geoip]` extra, `Config.geoip_database_path`).
+  `LLMProvider`/`ImageProvider` protocols define the narrative/visual seam;
+  `generate()`/`agenerate()` raise `ConfigError` until an LLM provider is wired.
 - PostgreSQL persistence with `pgvector`: `build_persistence(config)` +
   `create_all`/`drop_all`, an ORM factory whose vector dimensions come from
   `Config`, and `AsyncPersonaRepository` (+ a synchronous `PersonaRepository`

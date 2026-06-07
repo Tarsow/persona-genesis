@@ -88,3 +88,9 @@ def test_config_dims_from_dict() -> None:
     cfg = Config.from_dict({"face_embedding_dim": 256, "media_dir": "/tmp/m"})
     assert cfg.face_embedding_dim == 256
     assert cfg.media_dir == "/tmp/m"
+
+
+def test_config_geoip_path_default_and_set() -> None:
+    assert Config().geoip_database_path is None
+    cfg = Config.from_dict({"geoip_database_path": "/data/GeoLite2-City.mmdb"})
+    assert cfg.geoip_database_path == "/data/GeoLite2-City.mmdb"

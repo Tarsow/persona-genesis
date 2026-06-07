@@ -1,0 +1,12 @@
+[
+  {"country": "BR", "region": "São Paulo", "city": "São Paulo", "timezone": "America/Sao_Paulo"},
+  {"country": "BR", "region": "São Paulo", "city": "Campinas", "timezone": "America/Sao_Paulo"},
+  {"country": "BR", "region": "Rio de Janeiro", "city": "Rio de Janeiro", "timezone": "America/Sao_Paulo"},
+  {"country": "BR", "region": "Minas Gerais", "city": "Belo Horizonte", "timezone": "America/Sao_Paulo"},
+  {"country": "BR", "region": "Paraná", "city": "Curitiba", "timezone": "America/Sao_Paulo"},
+  {"country": "BR", "region": "Rio Grande do Sul", "city": "Porto Alegre", "timezone": "America/Sao_Paulo"},
+  {"country": "BR", "region": "Bahia", "city": "Salvador", "timezone": "America/Bahia"},
+  {"country": "BR", "region": "Pernambuco", "city": "Recife", "timezone": "America/Recife"},
+  {"country": "BR", "region": "Amazonas", "city": "Manaus", "timezone": "America/Manaus"},
+  {"country": "BR", "region": "Distrito Federal", "city": "Brasília", "timezone": "America/Sao_Paulo"}
+]

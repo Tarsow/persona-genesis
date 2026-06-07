@@ -1,0 +1,12 @@
+[
+  {"country": "US", "region": "New York", "city": "New York", "timezone": "America/New_York"},
+  {"country": "US", "region": "California", "city": "Los Angeles", "timezone": "America/Los_Angeles"},
+  {"country": "US", "region": "Illinois", "city": "Chicago", "timezone": "America/Chicago"},
+  {"country": "US", "region": "Texas", "city": "Houston", "timezone": "America/Chicago"},
+  {"country": "US", "region": "Arizona", "city": "Phoenix", "timezone": "America/Phoenix"},
+  {"country": "US", "region": "Colorado", "city": "Denver", "timezone": "America/Denver"},
+  {"country": "US", "region": "Washington", "city": "Seattle", "timezone": "America/Los_Angeles"},
+  {"country": "US", "region": "Florida", "city": "Miami", "timezone": "America/New_York"},
+  {"country": "US", "region": "Massachusetts", "city": "Boston", "timezone": "America/New_York"},
+  {"country": "US", "region": "Georgia", "city": "Atlanta", "timezone": "America/New_York"}
+]

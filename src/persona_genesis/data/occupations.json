@@ -1,0 +1,22 @@
+[
+  {"occupation": "Software Engineer", "industry": "Technology"},
+  {"occupation": "Data Scientist", "industry": "Technology"},
+  {"occupation": "Product Manager", "industry": "Technology"},
+  {"occupation": "Registered Nurse", "industry": "Healthcare"},
+  {"occupation": "Physician", "industry": "Healthcare"},
+  {"occupation": "Pharmacist", "industry": "Healthcare"},
+  {"occupation": "Teacher", "industry": "Education"},
+  {"occupation": "Professor", "industry": "Education"},
+  {"occupation": "Accountant", "industry": "Finance"},
+  {"occupation": "Financial Analyst", "industry": "Finance"},
+  {"occupation": "Marketing Manager", "industry": "Marketing"},
+  {"occupation": "Graphic Designer", "industry": "Design"},
+  {"occupation": "Civil Engineer", "industry": "Construction"},
+  {"occupation": "Architect", "industry": "Architecture"},
+  {"occupation": "Chef", "industry": "Hospitality"},
+  {"occupation": "Journalist", "industry": "Media"},
+  {"occupation": "Lawyer", "industry": "Legal"},
+  {"occupation": "Sales Representative", "industry": "Retail"},
+  {"occupation": "Electrician", "industry": "Trades"},
+  {"occupation": "Human Resources Specialist", "industry": "Human Resources"}
+]
