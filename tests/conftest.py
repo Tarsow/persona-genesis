@@ -1,5 +1,6 @@
 import os
 from datetime import UTC, date, datetime
+from pathlib import Path
 
 import pytest
 
@@ -120,3 +121,59 @@ def vault_key() -> bytes:
     from persona_genesis.db.crypto import generate_vault_key
 
     return generate_vault_key()
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--level",
+        action="store",
+        type=int,
+        default=0,
+        help="API cost tier: 0 offline (default), 1 minimal real API, 2 full real API",
+    )
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    config.addinivalue_line("markers", "llm(level): requires API cost --level >= the given value")
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    run_level = int(config.getoption("--level"))
+    for item in items:
+        marker = item.get_closest_marker("llm")
+        if marker is None:
+            continue
+        required = int(marker.kwargs.get("level", marker.args[0] if marker.args else 1))
+        if required > run_level:
+            item.add_marker(
+                pytest.mark.skip(reason=f"needs --level {required} (running at {run_level})")
+            )
+
+
+def _dotenv() -> dict[str, str]:
+    env = Path(__file__).resolve().parent.parent / ".env"
+    out: dict[str, str] = {}
+    if not env.exists():
+        return out
+    for line in env.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        out[key.strip()] = value.strip().strip('"').strip("'")
+    return out
+
+
+@pytest.fixture(scope="session")
+def deepseek_api_key() -> str:
+    key = _dotenv().get("DEEPSEEK_API_KEY") or os.environ.get("DEEPSEEK_API_KEY")
+    if not key:
+        pytest.skip("DEEPSEEK_API_KEY not set (add it to .env)")
+    return key
+
+
+@pytest.fixture
+def live_llm(deepseek_api_key: str) -> object:
+    from persona_genesis.providers.openai_compat import OpenAICompatProvider
+
+    return OpenAICompatProvider(api_key=deepseek_api_key)

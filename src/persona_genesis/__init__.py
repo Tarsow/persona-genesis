@@ -20,8 +20,11 @@ from persona_genesis.generators.constraints import StructuredConstraints
 from persona_genesis.geo.base import GeoLocation, GeoLocator
 from persona_genesis.geo.geoip2_locator import GeoIP2Locator
 from persona_genesis.orchestrator import PersonaGenerator
+from persona_genesis.providers.factory import build_llm_provider
+from persona_genesis.providers.fake_llm import FakeLLMProvider
 from persona_genesis.providers.image import ImageProvider
 from persona_genesis.providers.llm import LLMProvider
+from persona_genesis.providers.openai_compat import OpenAICompatProvider
 from persona_genesis.schema import (
     Account,
     Appearance,
@@ -68,6 +71,7 @@ __all__ = [
     "Document",
     "Education",
     "Face",
+    "FakeLLMProvider",
     "GeoIP2Locator",
     "GeoLocation",
     "GeoLocator",
@@ -80,6 +84,7 @@ __all__ = [
     "Location",
     "MediaOrigin",
     "OceanScores",
+    "OpenAICompatProvider",
     "PartialPersona",
     "Persona",
     "PersonaBuilder",
@@ -99,4 +104,5 @@ __all__ = [
     "VoicePrint",
     "Work",
     "__version__",
+    "build_llm_provider",
 ]

@@ -52,7 +52,7 @@ The deterministic, offline half of AI generation. Spec:
 
 ---
 
-## Phase 2 — Narrative layer (LLM) 🔭 🔒 (next; needs an LLM provider)
+## Phase 2 — Narrative layer (LLM) ✅ (DeepSeek; offline-testable via FakeLLMProvider)
 
 Generate `personality`, `appearance` (text), `backstory`, `voice` (text) from an LLM,
 feeding the structured fields as ground truth.
@@ -67,7 +67,7 @@ feeding the structured fields as ground truth.
   vLLM/OpenRouter) behind optional extras. *Blocked on API keys to verify.*
 - `RecordedProvider` for deterministic snapshot tests without per-run cost.
 
-## Phase 3 — Visual & biometric generation ⏳ 🔒
+## Phase 3 — Visual & biometric generation 🔭 🔒 (next; needs an image provider)
 
 Generate face/body imagery and their embeddings behind `ImageProvider`.
 

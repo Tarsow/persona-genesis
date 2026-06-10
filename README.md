@@ -64,9 +64,17 @@ print(draft.persona.model_dump_json())             # JSON-serializable contract
 ## Quickstart — generate a persona (offline, deterministic)
 
 The **structured layer** fills `identity`/`location`/`work`/`device` with real,
-coherent, reproducible data — no API key required. Narrative sections
-(personality/appearance/backstory/voice) need an LLM provider (a later phase), so
-`generate_structured` returns a `PartialPersona`.
+coherent, reproducible data — no API key required — and `generate_structured` returns
+a `PartialPersona`. The **narrative layer** adds personality/appearance/backstory/voice
+via an LLM; `agenerate()`/`generate()` return a complete `Persona`:
+
+```python
+from persona_genesis import Config, OpenAICompatProvider, PersonaGenerator
+
+llm = OpenAICompatProvider(api_key="sk-...")        # DeepSeek by default
+gen = PersonaGenerator(Config(), llm=llm)
+persona = await gen.agenerate(seed=42, locale="pt_BR")   # full Persona; one coherence retry
+```
 
 ```python
 from persona_genesis import Config, PersonaGenerator, StructuredConstraints
@@ -177,15 +185,18 @@ Embedding lengths you pass must match the corresponding `*_embedding_dim`.
 Contact/Location, standalone `Image`/`Audio`/`Video`, biometric `Face`/`Body`/
 `VoicePrint`, RAG `Document`, `Relationship`, `Account` vault, `PartialPersona`,
 `PersonaDraft`, `PersonaBuilder`, content-hashed media storage, the PostgreSQL +
-pgvector persistence layer (async + sync, vector search, encrypted vault), and the
+pgvector persistence layer (async + sync, vector search, encrypted vault), the
 **structured generation layer** (`PersonaGenerator.generate_structured`/
-`fill_structured` for identity/location/work/device, with GeoIP IP→location).
+`fill_structured` for identity/location/work/device, with GeoIP IP→location), and the
+**narrative generation layer** — `agenerate()`/`generate()` produce a complete
+`Persona` (personality/appearance/backstory/voice) via an OpenAI-compatible
+`OpenAICompatProvider` (DeepSeek default), with a deterministic coherence pass and a
+`FakeLLMProvider` for offline use.
 
 **Not yet built (see [Roadmap](#roadmap)):**
-- **Narrative & visual generation** — the LLM-driven sections (personality/appearance/
-  backstory/voice) and image/biometric generation behind the `LLMProvider`/
-  `ImageProvider` protocols. `generate()`/`agenerate()` raise until a provider is
-  wired; `generate_structured()` works today.
+- **Visual & biometric generation** — image/biometric generation behind the
+  `ImageProvider` protocol (face/body images + embeddings). Narrative generation
+  works today with an LLM provider; `agenerate()` raises only if no `llm` is given.
 - **AI extraction** — `extraction.extract_faces/transcribe/describe_image/embed_text/…`
   exist as a fixed seam but raise `NotImplementedError`. So embeddings, transcripts,
   descriptions, and NSFW scores are caller-supplied today.
@@ -198,15 +209,14 @@ round-trip.
 
 ## Roadmap
 
-Phased plan in [`docs/roadmap.md`](docs/roadmap.md). Done: Phase 0 (foundation) and
-Phase 1 (structured generation). Next:
+Phased plan in [`docs/roadmap.md`](docs/roadmap.md). Done: Phase 0 (foundation),
+Phase 1 (structured generation), Phase 2 (narrative/LLM generation). Next:
 
-1. **Narrative layer (Phase 2)** — LLM-generated personality/appearance/backstory/voice
-   with a coherence pass, making `agenerate()` return a complete `Persona`.
-2. **Visual & biometric generation (Phase 3)** — face/body images + embeddings.
-3. **AI extraction (Phase 4)** — implement the extraction seam and
+1. **Visual & biometric generation (Phase 3)** — face/body images + embeddings behind
+   an `ImageProvider`.
+2. **AI extraction (Phase 4)** — implement the extraction seam and
    `add_face(image=…)`/`add_voice(audio=…)`/`add_document(file=…)`.
-4. **Database deduplication (Phase 5)** — dedupe media/documents by content hash.
+3. **Database deduplication (Phase 5)** — dedupe media/documents by content hash.
 
 ## Development
 

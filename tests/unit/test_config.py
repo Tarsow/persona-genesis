@@ -6,8 +6,8 @@ from persona_genesis.exceptions import ConfigError
 
 def test_defaults_match_spec() -> None:
     cfg = Config()
-    assert cfg.llm.provider == "anthropic"
-    assert cfg.llm.model == "claude-opus-4-7"
+    assert cfg.llm.provider == "deepseek"
+    assert cfg.llm.model == "deepseek-chat"
     assert cfg.image.provider == "fal"
     assert cfg.image.model == "fal-ai/flux/schnell"
     assert cfg.default_locale == "en_US"
@@ -47,7 +47,7 @@ def test_from_dict_reads_nested_keys() -> None:
 
 def test_from_dict_empty_uses_defaults() -> None:
     cfg = Config.from_dict({})
-    assert cfg.llm.provider == "anthropic"
+    assert cfg.llm.provider == "deepseek"
     assert cfg.image.provider == "fal"
     assert cfg.default_locale == "en_US"
 

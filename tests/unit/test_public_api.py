@@ -63,3 +63,15 @@ def test_generator_symbols_exported() -> None:
         LLMProvider,
         StructuredConstraints,
     }
+
+
+def test_llm_provider_symbols_exported() -> None:
+    from persona_genesis import (
+        FakeLLMProvider,
+        OpenAICompatProvider,
+        build_llm_provider,
+    )
+
+    assert OpenAICompatProvider.__name__ == "OpenAICompatProvider"
+    assert FakeLLMProvider.__name__ == "FakeLLMProvider"
+    assert callable(build_llm_provider)

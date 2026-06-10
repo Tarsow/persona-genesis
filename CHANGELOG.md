@@ -31,6 +31,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   deferred (raise `NotImplementedError`).
 - `Config` gains `database_url`, `vault_key`, `media_dir`, and embedding-dim
   fields (`face`/`body`/`voice`/`document`).
+- Narrative generation (LLM): `PersonaGenerator.agenerate()`/`generate()` now produce a
+  complete `Persona` — personality, appearance, backstory, and voice (`status="gen"`) —
+  via an OpenAI-compatible `OpenAICompatProvider` (raw httpx; **DeepSeek** default),
+  with a `FakeLLMProvider` for offline use and a `build_llm_provider(config)` factory.
+  A deterministic coherence pass (backstory chronology, age vs seniority) retries once
+  before raising `CoherenceError`. The default `LLMConfig` provider is now `deepseek`.
+  Cost-tiered tests via `pytest --level` (0 offline, 1 minimal ping, 2 full).
 - Structured generation (offline, deterministic): `PersonaGenerator` with
   `generate_structured`/`agenerate_structured` and `fill_structured`/
   `afill_structured`, filling `identity`/`location`/`work`/`device` (contact stays

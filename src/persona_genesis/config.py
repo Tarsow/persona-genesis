@@ -8,16 +8,16 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from persona_genesis.exceptions import ConfigError
 
-LLMProviderName = Literal["anthropic", "openai", "openai_compat"]
+LLMProviderName = Literal["anthropic", "openai", "openai_compat", "deepseek"]
 ImageProviderName = Literal["fal", "replicate", "openai", "diffusers_local"]
 
 
 class LLMConfig(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    provider: LLMProviderName = "anthropic"
+    provider: LLMProviderName = "deepseek"
     api_key: str | None = None
-    model: str = "claude-opus-4-7"
+    model: str = "deepseek-chat"
     base_url: str | None = None  # only used by openai_compat
     timeout_s: int = 60
     max_retries: int = 2
