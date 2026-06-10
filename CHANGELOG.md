@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- `RecordedProvider` (`LLMProvider`): record-once / replay LLM exchanges to a JSON
+  cassette, keyed on a hash of `(kind, system, user, schema)`. With an `upstream` it
+  records on a cassette miss and persists; without one it replays only and raises
+  `ProviderError` on a miss. Enables an offline, deterministic snapshot test of the
+  full `agenerate()` path (committed cassette recorded live against DeepSeek) that
+  runs at `--level 0` with no API cost. Exported from the package root.
 - Project scaffolding: uv + hatchling, `src/` layout, ruff/mypy/pytest, CI.
 - `Persona` Pydantic schema and all sub-models (identity, location, contact,
   work, appearance, personality, voice, device, backstory, metadata).

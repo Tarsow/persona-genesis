@@ -1,0 +1,101 @@
+{
+  "84b69ee76a9e770e93f9f07397c5cc26f4635ee99aa62f3c14b10c9a4c801a45": {
+    "kind": "json",
+    "response": {
+      "appearance": {
+        "build": "athletic",
+        "description": "Chad has a clean-cut, professional look with dark brown hair typically combed back, light brown eyes, and an athletic build. He stands 180 cm tall and often wears business casual attire.",
+        "distinguishing_features": [
+          "small scar above left eyebrow",
+          "wears a silver watch"
+        ],
+        "eye_color": "light brown",
+        "hair_color": "dark brown",
+        "hair_style": "combed back",
+        "height_cm": 180
+      },
+      "backstory": {
+        "bio": "Chad Boone grew up in a suburb of Atlanta, the middle child of three. His father was an engineer and his mother a teacher. From a young age, Chad was fascinated by how things work, often taking apart household electronics. He earned a degree in Computer Science and an MBA, leveraging his technical background into product management. At Wilson-Hodges, he leads a team of developers and designers, known for shipping features on time. He enjoys running in Piedmont Park and is a die-hard Braves fan.",
+        "education": [
+          {
+            "degree": "BS",
+            "end_year": 2015,
+            "field_of_study": "Computer Science",
+            "institution": "Georgia Institute of Technology",
+            "start_year": 2011
+          },
+          {
+            "degree": "MBA",
+            "end_year": 2019,
+            "field_of_study": "Business Administration",
+            "institution": "Emory University",
+            "start_year": 2017
+          }
+        ],
+        "key_life_events": [
+          {
+            "description": "Graduated high school and started at Georgia Tech.",
+            "year": 2011
+          },
+          {
+            "description": "Started first job as a software engineer at a startup.",
+            "year": 2015
+          },
+          {
+            "description": "Enrolled in MBA program at Emory University.",
+            "year": 2017
+          },
+          {
+            "description": "Transitioned to product management at Wilson-Hodges.",
+            "year": 2019
+          },
+          {
+            "description": "Promoted to mid-level product manager.",
+            "year": 2021
+          }
+        ]
+      },
+      "personality": {
+        "ocean": {
+          "agreeableness": 0.6,
+          "conscientiousness": 0.8,
+          "extraversion": 0.65,
+          "neuroticism": 0.3,
+          "openness": 0.7
+        },
+        "quirks": [
+          "always carries a Moleskine notebook",
+          "drinks black coffee only",
+          "paces while on phone calls"
+        ],
+        "traits": [
+          "analytical",
+          "detail-oriented",
+          "assertive",
+          "curious"
+        ],
+        "values": [
+          "efficiency",
+          "innovation",
+          "teamwork",
+          "integrity"
+        ]
+      },
+      "voice": {
+        "posting_cadence": "Posts on LinkedIn 2-3 times a week, mostly articles about product management and tech trends.",
+        "sample_paragraph": "Just finished a great sprint planning session. The team aligned on prioritizing user feedback over new features, which I think is the right call. We're seeing a 20% increase in engagement after the last iteration. Data doesn't lie. Now, if only we could speed up the QA cycle... always a bottleneck. Off for a run to clear my head before the next standup.",
+        "typical_topics": [
+          "product management methodologies",
+          "agile development",
+          "tech industry news",
+          "Atlanta startup scene",
+          "running and fitness"
+        ],
+        "writing_style": "Concise, direct, and data-driven. Uses bullet points in emails and avoids jargon unless technical. Occasionally adds a touch of humor."
+      }
+    },
+    "schema": "NarrativePayload",
+    "system": "You generate realistic, internally consistent persona narrative for a synthetic but\nplausible person. You are given fixed ground-truth facts (name, age, gender, locale,\nlocation, occupation). Invent the personality, appearance, backstory, and writing\nvoice so they fit those facts.\n\nRules:\n- Keep the appearance `description` consistent with the structured appearance fields\n  you choose (hair_color, hair_style, eye_color, build, height_cm).\n- Make the writing `voice` (style, sample_paragraph, topics) fit the person's locale,\n  age, and occupation.\n- Backstory must be chronologically consistent: education and life-event years fall\n  between the person's birth year and the current year, education start_year is not\n  after end_year, and life events are listed in chronological order. The occupation's\n  seniority must be plausible for the person's age.\n- Be specific and human; avoid clichés and contradictions.\n\nRespond ONLY with a single JSON object matching the provided schema. Do not include\nany commentary outside the JSON.\n",
+    "user": "Generate personality, appearance, backstory, and voice for this person:\nLocale: en_US\nName: Chad Boone; gender: male; age: 31; nationality: US\nLocation: Atlanta, Georgia, US\nWork: Product Manager (mid) at Wilson-Hodges; industry Technology"
+  }
+}

@@ -69,9 +69,11 @@ def test_llm_provider_symbols_exported() -> None:
     from persona_genesis import (
         FakeLLMProvider,
         OpenAICompatProvider,
+        RecordedProvider,
         build_llm_provider,
     )
 
     assert OpenAICompatProvider.__name__ == "OpenAICompatProvider"
     assert FakeLLMProvider.__name__ == "FakeLLMProvider"
+    assert RecordedProvider.__name__ == "RecordedProvider"
     assert callable(build_llm_provider)

@@ -52,20 +52,29 @@ The deterministic, offline half of AI generation. Spec:
 
 ---
 
-## Phase 2 — Narrative layer (LLM) ✅ (DeepSeek; offline-testable via FakeLLMProvider)
+## Phase 2 — Narrative layer (LLM) ✅ (DeepSeek; verified live 2026-06-10)
 
 Generate `personality`, `appearance` (text), `backstory`, `voice` (text) from an LLM,
 feeding the structured fields as ground truth.
 
-- Implement the narrative generators behind `LLMProvider`; `agenerate()` becomes
-  functional and returns a complete strict `Persona`.
-- **Coherence pass**: age vs. seniority, locale vs. name/voice, UA vs. device,
-  appearance text vs. structured fields, backstory ordering — one retry on violation,
-  else `CoherenceError`.
-- Narrative fields tagged `status="gen"`.
-- **Provider adapters** (own sub-step): Anthropic, OpenAI, openai-compat (Ollama/
-  vLLM/OpenRouter) behind optional extras. *Blocked on API keys to verify.*
-- `RecordedProvider` for deterministic snapshot tests without per-run cost.
+- ✅ Narrative generators behind `LLMProvider`; `agenerate()`/`generate()` return a
+  complete strict `Persona`. Verified end-to-end against DeepSeek (live `--level 2`
+  test green; narrative coherent with structured ground truth).
+- ✅ **Coherence pass**: backstory chronology, age vs. seniority — one retry on
+  violation, else `CoherenceError`. *(Remaining checks below are deferred follow-ups.)*
+- ✅ Narrative fields tagged `status="gen"`.
+- ✅ openai-compat adapter (`OpenAICompatProvider`, raw httpx, DeepSeek default) +
+  `FakeLLMProvider` + `build_llm_provider(config)` factory; cost-tiered live tests
+  (`pytest --level 0/1/2`).
+- ✅ **`RecordedProvider`** — record-once / replay LLM exchanges to a JSON cassette;
+  the full `agenerate()` path is snapshot-tested offline, deterministically, at
+  `--level 0` with no per-run API cost (committed cassette recorded live for
+  `seed=1`/`en_US`).
+- ⏳ Further coherence checks: locale vs. name/voice, UA vs. device, appearance text
+  vs. structured fields.
+- 🔒 Additional provider adapters: Anthropic, OpenAI, other openai-compat backends
+  (Ollama/vLLM/OpenRouter) behind optional extras. *Blocked on respective API keys
+  to verify.*
 
 ## Phase 3 — Visual & biometric generation 🔭 🔒 (next; needs an image provider)
 

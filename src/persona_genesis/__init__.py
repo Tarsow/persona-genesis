@@ -25,6 +25,7 @@ from persona_genesis.providers.fake_llm import FakeLLMProvider
 from persona_genesis.providers.image import ImageProvider
 from persona_genesis.providers.llm import LLMProvider
 from persona_genesis.providers.openai_compat import OpenAICompatProvider
+from persona_genesis.providers.recorded import RecordedProvider
 from persona_genesis.schema import (
     Account,
     Appearance,
@@ -96,6 +97,7 @@ __all__ = [
     "PersonaRepository",
     "Personality",
     "ProviderError",
+    "RecordedProvider",
     "Relationship",
     "Status",
     "StructuredConstraints",
