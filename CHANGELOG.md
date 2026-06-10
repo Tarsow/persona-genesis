@@ -59,6 +59,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   media/document/relationship CRUD, M:N links, persona-scoped pgvector
   similarity search, and Fernet-encrypted account secrets at rest.
 
+### Fixed
+- Narrative backstory off-by-one: the prompt now states the exact birth year
+  (`born: YYYY (age N)`) instead of age alone. Previously the model anchored early
+  life events to `current_year - age`, which can be `dob.year - 1`, tripping the
+  birth-year coherence check and forcing `agenerate` to retry (or fail). Verified
+  across five live DeepSeek seeds/locales — first-attempt violations dropped from
+  4/5 to 0/5. (Snapshot cassette re-recorded for the new prompt.)
+
 ### Changed
 - `Contact` is real-only: `phone`/`email` default to `None`; `email_handle`
   removed. `Location.street`/`postal_code` are now optional.

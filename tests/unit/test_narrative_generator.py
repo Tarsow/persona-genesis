@@ -1,6 +1,9 @@
 from datetime import date
 
-from persona_genesis.generators.narrative.narrative import NarrativeGenerator
+from persona_genesis.generators.narrative.narrative import (
+    NarrativeGenerator,
+    _user_prompt,
+)
 from persona_genesis.generators.narrative.payload import NarrativePayload
 from persona_genesis.providers.fake_llm import FakeLLMProvider
 from persona_genesis.schema.identity import Identity
@@ -33,6 +36,13 @@ def _partial() -> PartialPersona:
         work=Work(occupation="Engineer", employer="Acme", seniority="senior",
                   industry="Technology", schedule="full_time"),
     )
+
+
+def test_user_prompt_states_birth_year() -> None:
+    # The model must be given the exact birth year so it does not anchor early
+    # life events to (current_year - age), which can be dob.year - 1.
+    prompt = _user_prompt(_partial(), None)
+    assert "1994" in prompt  # _partial()'s dob is 1994-01-01
 
 
 async def test_generate_maps_payload_with_gen_status() -> None:

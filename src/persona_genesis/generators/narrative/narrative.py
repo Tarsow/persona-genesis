@@ -30,8 +30,8 @@ def _user_prompt(partial: PartialPersona, violations: list[str] | None) -> str:
     lines = [
         "Generate personality, appearance, backstory, and voice for this person:",
         f"Locale: {partial.locale}",
-        f"Name: {i.full_name}; gender: {i.gender}; age: {_age(i.dob)}; "
-        f"nationality: {i.nationality}",
+        f"Name: {i.full_name}; gender: {i.gender}; born: {i.dob.year} "
+        f"(age {_age(i.dob)}); nationality: {i.nationality}",
         f"Location: {loc.city}, {loc.region}, {loc.country}",
         f"Work: {w.occupation} ({w.seniority}) at {w.employer}; industry {w.industry}",
     ]
