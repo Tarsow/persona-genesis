@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- Coherence checks extended beyond backstory chronology / age-vs-seniority:
+  user-agent vs. structured device (the UA must carry the OS and browser token) and
+  appearance free text vs. structured fields (hair/eye colour contradiction, an
+  explicit `NNN cm` height that disagrees with `height_cm`, and a build word that
+  disagrees with `build`). Checks are conservative — they flag only direct
+  contradictions, never omissions — and produce no false positives on live output.
 - `RecordedProvider` (`LLMProvider`): record-once / replay LLM exchanges to a JSON
   cassette, keyed on a hash of `(kind, system, user, schema)`. With an `upstream` it
   records on a cassette miss and persists; without one it replays only and raises
