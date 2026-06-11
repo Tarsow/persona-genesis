@@ -24,17 +24,53 @@ def _age(dob: date) -> int:
     return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
 
+# Region-specific names take precedence; otherwise the language subtag is mapped.
+# English locales return None: English is the default output, so no instruction is
+# added (this keeps English user prompts — and the snapshot cassette — unchanged).
+_LOCALE_LANGUAGE: dict[str, str] = {
+    "pt_BR": "Brazilian Portuguese",
+    "pt_PT": "European Portuguese",
+}
+_LANGUAGE_BY_SUBTAG: dict[str, str] = {
+    "pt": "Portuguese", "es": "Spanish", "de": "German", "fr": "French",
+    "it": "Italian", "nl": "Dutch", "sv": "Swedish", "no": "Norwegian",
+    "da": "Danish", "fi": "Finnish", "pl": "Polish", "ru": "Russian",
+    "uk": "Ukrainian", "cs": "Czech", "ro": "Romanian", "hu": "Hungarian",
+    "el": "Greek", "tr": "Turkish", "ja": "Japanese", "ko": "Korean",
+    "zh": "Chinese", "ar": "Arabic", "he": "Hebrew", "hi": "Hindi",
+    "th": "Thai", "vi": "Vietnamese", "id": "Indonesian",
+}
+
+
+def _voice_language(locale: str | None) -> str | None:
+    """The language to write the voice text in, or None for English/unknown locales."""
+    if not locale:
+        return None
+    norm = locale.replace("-", "_")
+    if norm.split("_")[0].lower() == "en":
+        return None
+    if norm in _LOCALE_LANGUAGE:
+        return _LOCALE_LANGUAGE[norm]
+    return _LANGUAGE_BY_SUBTAG.get(norm.split("_")[0].lower())
+
+
 def _user_prompt(partial: PartialPersona, violations: list[str] | None) -> str:
     i, loc, w = partial.identity, partial.location, partial.work
     assert i is not None and loc is not None and w is not None
     lines = [
         "Generate personality, appearance, backstory, and voice for this person:",
         f"Locale: {partial.locale}",
-        f"Name: {i.full_name}; gender: {i.gender}; age: {_age(i.dob)}; "
-        f"nationality: {i.nationality}",
+        f"Name: {i.full_name}; gender: {i.gender}; born: {i.dob.year} "
+        f"(age {_age(i.dob)}); nationality: {i.nationality}",
         f"Location: {loc.city}, {loc.region}, {loc.country}",
         f"Work: {w.occupation} ({w.seniority}) at {w.employer}; industry {w.industry}",
     ]
+    language = _voice_language(partial.locale)
+    if language is not None:
+        lines.append(
+            f"Write voice.sample_paragraph and voice.typical_topics in {language} "
+            "(this person's native language); keep the JSON keys in English."
+        )
     if violations:
         lines.append("Fix these problems from your previous attempt: " + "; ".join(violations))
     return "\n".join(lines)

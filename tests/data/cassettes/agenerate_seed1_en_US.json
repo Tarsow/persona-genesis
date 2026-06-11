@@ -1,101 +1,98 @@
 {
-  "84b69ee76a9e770e93f9f07397c5cc26f4635ee99aa62f3c14b10c9a4c801a45": {
+  "35da3a7704004de269069289fa16d365ed99500202e9512d889f45373a99f518": {
     "kind": "json",
     "response": {
       "appearance": {
         "build": "athletic",
-        "description": "Chad has a clean-cut, professional look with dark brown hair typically combed back, light brown eyes, and an athletic build. He stands 180 cm tall and often wears business casual attire.",
+        "description": "Chad is a clean-cut, athletic man with a quick smile and an alert, focused gaze. He typically dresses in business casual attire but always wears a fitness tracker.",
         "distinguishing_features": [
           "small scar above left eyebrow",
-          "wears a silver watch"
+          "faint dimples when smiling"
         ],
-        "eye_color": "light brown",
+        "eye_color": "hazel",
         "hair_color": "dark brown",
-        "hair_style": "combed back",
-        "height_cm": 180
+        "hair_style": "short, neatly combed",
+        "height_cm": 183
       },
       "backstory": {
-        "bio": "Chad Boone grew up in a suburb of Atlanta, the middle child of three. His father was an engineer and his mother a teacher. From a young age, Chad was fascinated by how things work, often taking apart household electronics. He earned a degree in Computer Science and an MBA, leveraging his technical background into product management. At Wilson-Hodges, he leads a team of developers and designers, known for shipping features on time. He enjoys running in Piedmont Park and is a die-hard Braves fan.",
+        "bio": "Born and raised in the suburbs of Atlanta, Chad was the middle child of a nurse and a high school teacher. He developed an early interest in how things work, which led him to study computer science at Georgia Tech. After graduation, he worked as a software developer for a few years before transitioning into product management. He now leads cross-functional teams at a mid-sized tech firm, focusing on user-centric design and agile methodologies. Outside work, he is a devoted fan of Atlanta United and enjoys weekend hiking trips with his golden retriever.",
         "education": [
           {
-            "degree": "BS",
-            "end_year": 2015,
+            "degree": "Bachelor of Science",
+            "end_year": 2016,
             "field_of_study": "Computer Science",
             "institution": "Georgia Institute of Technology",
-            "start_year": 2011
-          },
-          {
-            "degree": "MBA",
-            "end_year": 2019,
-            "field_of_study": "Business Administration",
-            "institution": "Emory University",
-            "start_year": 2017
+            "start_year": 2012
           }
         ],
         "key_life_events": [
           {
-            "description": "Graduated high school and started at Georgia Tech.",
-            "year": 2011
+            "description": "Born in Atlanta, Georgia",
+            "year": 1994
           },
           {
-            "description": "Started first job as a software engineer at a startup.",
-            "year": 2015
+            "description": "Graduated high school and began undergraduate studies at Georgia Tech",
+            "year": 2012
           },
           {
-            "description": "Enrolled in MBA program at Emory University.",
-            "year": 2017
+            "description": "Earned B.S. in Computer Science; started first job as software developer at a startup",
+            "year": 2016
           },
           {
-            "description": "Transitioned to product management at Wilson-Hodges.",
+            "description": "Transitioned to product management after completing a certification",
             "year": 2019
           },
           {
-            "description": "Promoted to mid-level product manager.",
+            "description": "Joined Wilson-Hodges as Associate Product Manager",
             "year": 2021
+          },
+          {
+            "description": "Promoted to mid-level Product Manager at Wilson-Hodges",
+            "year": 2024
           }
         ]
       },
       "personality": {
         "ocean": {
-          "agreeableness": 0.6,
+          "agreeableness": 0.65,
           "conscientiousness": 0.8,
-          "extraversion": 0.65,
+          "extraversion": 0.7,
           "neuroticism": 0.3,
-          "openness": 0.7
+          "openness": 0.75
         },
         "quirks": [
-          "always carries a Moleskine notebook",
-          "drinks black coffee only",
-          "paces while on phone calls"
+          "always carries a pocket notebook",
+          "refers to sprints as 'chapters'",
+          "habitually sips black coffee"
         ],
         "traits": [
           "analytical",
-          "detail-oriented",
-          "assertive",
-          "curious"
+          "pragmatic",
+          "diplomatic",
+          "results-driven"
         ],
         "values": [
           "efficiency",
-          "innovation",
           "teamwork",
-          "integrity"
+          "continuous improvement",
+          "work-life balance"
         ]
       },
       "voice": {
-        "posting_cadence": "Posts on LinkedIn 2-3 times a week, mostly articles about product management and tech trends.",
-        "sample_paragraph": "Just finished a great sprint planning session. The team aligned on prioritizing user feedback over new features, which I think is the right call. We're seeing a 20% increase in engagement after the last iteration. Data doesn't lie. Now, if only we could speed up the QA cycle... always a bottleneck. Off for a run to clear my head before the next standup.",
+        "posting_cadence": "2–3 times per week, mostly LinkedIn articles and posts during weekdays",
+        "sample_paragraph": "At the end of the day, product management is about aligning business goals with user needs. One thing I’ve learned from leading multiple feature launches: never underestimate the value of a simple, well-defined MVP. It’s better to ship 80% of the right thing this sprint than 100% of the wrong thing next quarter. What’s your approach to prioritization?",
         "typical_topics": [
-          "product management methodologies",
-          "agile development",
-          "tech industry news",
-          "Atlanta startup scene",
-          "running and fitness"
+          "product management",
+          "Agile methodology",
+          "user experience",
+          "career transitions",
+          "Atlanta startup scene"
         ],
-        "writing_style": "Concise, direct, and data-driven. Uses bullet points in emails and avoids jargon unless technical. Occasionally adds a touch of humor."
+        "writing_style": "Concise, friendly yet professional; uses bullet points and data-driven arguments; occasionally injects tech jargon"
       }
     },
     "schema": "NarrativePayload",
-    "system": "You generate realistic, internally consistent persona narrative for a synthetic but\nplausible person. You are given fixed ground-truth facts (name, age, gender, locale,\nlocation, occupation). Invent the personality, appearance, backstory, and writing\nvoice so they fit those facts.\n\nRules:\n- Keep the appearance `description` consistent with the structured appearance fields\n  you choose (hair_color, hair_style, eye_color, build, height_cm).\n- Make the writing `voice` (style, sample_paragraph, topics) fit the person's locale,\n  age, and occupation.\n- Backstory must be chronologically consistent: education and life-event years fall\n  between the person's birth year and the current year, education start_year is not\n  after end_year, and life events are listed in chronological order. The occupation's\n  seniority must be plausible for the person's age.\n- Be specific and human; avoid clichés and contradictions.\n\nRespond ONLY with a single JSON object matching the provided schema. Do not include\nany commentary outside the JSON.\n",
-    "user": "Generate personality, appearance, backstory, and voice for this person:\nLocale: en_US\nName: Chad Boone; gender: male; age: 31; nationality: US\nLocation: Atlanta, Georgia, US\nWork: Product Manager (mid) at Wilson-Hodges; industry Technology"
+    "system": "You generate realistic, internally consistent persona narrative for a synthetic but\nplausible person. You are given fixed ground-truth facts (name, birth year, age, gender, locale,\nlocation, occupation). Invent the personality, appearance, backstory, and writing\nvoice so they fit those facts.\n\nRules:\n- Keep the appearance `description` consistent with the structured appearance fields\n  you choose (hair_color, hair_style, eye_color, build, height_cm).\n- Make the writing `voice` (style, sample_paragraph, topics) fit the person's locale,\n  age, and occupation.\n- Backstory must be chronologically consistent: every education and life-event year is\n  >= the stated birth year and <= the current year (nothing may predate the birth\n  year), education start_year is not after end_year, and life events are listed in\n  chronological order. The occupation's seniority must be plausible for the person's age.\n- Be specific and human; avoid clichés and contradictions.\n\nRespond ONLY with a single JSON object matching the provided schema. Do not include\nany commentary outside the JSON.\n",
+    "user": "Generate personality, appearance, backstory, and voice for this person:\nLocale: en_US\nName: Chad Boone; gender: male; born: 1994 (age 31); nationality: US\nLocation: Atlanta, Georgia, US\nWork: Product Manager (mid) at Wilson-Hodges; industry Technology"
   }
 }

@@ -1,6 +1,10 @@
 from datetime import date
 
-from persona_genesis.generators.narrative.narrative import NarrativeGenerator
+from persona_genesis.generators.narrative.narrative import (
+    NarrativeGenerator,
+    _user_prompt,
+    _voice_language,
+)
 from persona_genesis.generators.narrative.payload import NarrativePayload
 from persona_genesis.providers.fake_llm import FakeLLMProvider
 from persona_genesis.schema.identity import Identity
@@ -33,6 +37,39 @@ def _partial() -> PartialPersona:
         work=Work(occupation="Engineer", employer="Acme", seniority="senior",
                   industry="Technology", schedule="full_time"),
     )
+
+
+def test_user_prompt_states_birth_year() -> None:
+    # The model must be given the exact birth year so it does not anchor early
+    # life events to (current_year - age), which can be dob.year - 1.
+    prompt = _user_prompt(_partial(), None)
+    assert "1994" in prompt  # _partial()'s dob is 1994-01-01
+
+
+def test_voice_language_maps_non_english_locales() -> None:
+    assert _voice_language("pt_BR") == "Brazilian Portuguese"
+    assert _voice_language("de_DE") == "German"
+    assert _voice_language("fr-FR") == "French"  # hyphen form normalised
+
+
+def test_voice_language_is_none_for_english_or_unknown() -> None:
+    # English is the default output language → no instruction (keeps the en_US prompt,
+    # and thus the snapshot cassette, unchanged).
+    assert _voice_language("en_US") is None
+    assert _voice_language("en_GB") is None
+    assert _voice_language(None) is None
+    assert _voice_language("zz_ZZ") is None  # unknown subtag → no explicit name
+
+
+def test_user_prompt_localizes_voice_for_non_english_locale() -> None:
+    partial = _partial().model_copy(update={"locale": "pt_BR"})
+    prompt = _user_prompt(partial, None)
+    assert "Brazilian Portuguese" in prompt
+
+
+def test_user_prompt_has_no_voice_language_line_for_english() -> None:
+    prompt = _user_prompt(_partial(), None)  # en_US
+    assert "language" not in prompt.lower()
 
 
 async def test_generate_maps_payload_with_gen_status() -> None:

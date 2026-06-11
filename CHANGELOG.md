@@ -7,6 +7,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- Locale-aware voice: for non-English locales the narrative user prompt now instructs
+  the model to write `voice.sample_paragraph` and `voice.typical_topics` in the
+  locale's language (e.g. `pt_BR` → Brazilian Portuguese), keeping JSON keys in
+  English. English locales are unchanged. Prompt-steered, no new dependency and no
+  validator (per the spec's fuzzy-coherence stance). Verified live: a `pt_BR` persona's
+  voice is Brazilian Portuguese; `en_US` stays English. (Only `en_US`/`pt_BR` are
+  supported today; other locales resolve to the default before narrative.)
 - `RecordedProvider` (`LLMProvider`): record-once / replay LLM exchanges to a JSON
   cassette, keyed on a hash of `(kind, system, user, schema)`. With an `upstream` it
   records on a cassette miss and persists; without one it replays only and raises
@@ -58,6 +65,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   facade) covering persona `save`/`get`/`get_partial`/`save_draft`, biometric/
   media/document/relationship CRUD, M:N links, persona-scoped pgvector
   similarity search, and Fernet-encrypted account secrets at rest.
+
+### Fixed
+- Narrative backstory off-by-one: the prompt now states the exact birth year
+  (`born: YYYY (age N)`) instead of age alone. Previously the model anchored early
+  life events to `current_year - age`, which can be `dob.year - 1`, tripping the
+  birth-year coherence check and forcing `agenerate` to retry (or fail). Verified
+  across five live DeepSeek seeds/locales — first-attempt violations dropped from
+  4/5 to 0/5. (Snapshot cassette re-recorded for the new prompt.)
 
 ### Changed
 - `Contact` is real-only: `phone`/`email` default to `None`; `email_handle`
