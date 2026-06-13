@@ -7,6 +7,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+<<<<<<< HEAD
 - Locale-aware voice: for non-English locales the narrative user prompt now instructs
   the model to write `voice.sample_paragraph` and `voice.typical_topics` in the
   locale's language (e.g. `pt_BR` → Brazilian Portuguese), keeping JSON keys in
@@ -14,6 +15,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   validator (per the spec's fuzzy-coherence stance). Verified live: a `pt_BR` persona's
   voice is Brazilian Portuguese; `en_US` stays English. (Only `en_US`/`pt_BR` are
   supported today; other locales resolve to the default before narrative.)
+=======
+- Coherence checks extended beyond backstory chronology / age-vs-seniority:
+  user-agent vs. structured device (the UA must carry the OS and browser token) and
+  appearance free text vs. structured fields (hair/eye colour contradiction, an
+  explicit `NNN cm` height that disagrees with `height_cm`, and a build word that
+  disagrees with `build`). Checks are conservative — they flag only direct
+  contradictions, never omissions — and produce no false positives on live output.
+>>>>>>> feat/coherence-checks
 - `RecordedProvider` (`LLMProvider`): record-once / replay LLM exchanges to a JSON
   cassette, keyed on a hash of `(kind, system, user, schema)`. With an `upstream` it
   records on a cassette miss and persists; without one it replays only and raises

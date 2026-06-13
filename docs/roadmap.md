@@ -70,8 +70,15 @@ feeding the structured fields as ground truth.
   the full `agenerate()` path is snapshot-tested offline, deterministically, at
   `--level 0` with no per-run API cost (committed cassette recorded live for
   `seed=1`/`en_US`).
-- ⏳ Further coherence checks: locale vs. name/voice, UA vs. device, appearance text
-  vs. structured fields.
+- ✅ Further coherence checks: UA vs. device (user agent must carry the OS/browser
+  token) and appearance text vs. structured fields (hair/eye colour contradiction,
+  explicit `NNN cm` height mismatch, build-word vs. `build`) — conservative, zero
+  false positives across live seeds/locales.
+- ⏳ Coherence: locale vs. name/voice — deferred; reliable detection needs a
+  name-origin dataset / language detection, not deterministic string logic.
+- ⏳ Fix: life-event years anchor a year before `dob.year` because the prompt passes
+  `age`, not the birth year — `agenerate` retries spuriously. Add `born: {dob.year}`
+  to the prompt (and re-record the cassette).
 - 🔒 Additional provider adapters: Anthropic, OpenAI, other openai-compat backends
   (Ollama/vLLM/OpenRouter) behind optional extras. *Blocked on respective API keys
   to verify.*
