@@ -3,7 +3,10 @@ from datetime import date
 from persona_genesis.generators.narrative.narrative import (
     NarrativeGenerator,
     _user_prompt,
+<<<<<<< HEAD
     _voice_language,
+=======
+>>>>>>> fix/lifeevent-birthyear
 )
 from persona_genesis.generators.narrative.payload import NarrativePayload
 from persona_genesis.providers.fake_llm import FakeLLMProvider
@@ -46,6 +49,7 @@ def test_user_prompt_states_birth_year() -> None:
     assert "1994" in prompt  # _partial()'s dob is 1994-01-01
 
 
+<<<<<<< HEAD
 def test_voice_language_maps_non_english_locales() -> None:
     assert _voice_language("pt_BR") == "Brazilian Portuguese"
     assert _voice_language("de_DE") == "German"
@@ -72,6 +76,8 @@ def test_user_prompt_has_no_voice_language_line_for_english() -> None:
     assert "language" not in prompt.lower()
 
 
+=======
+>>>>>>> fix/lifeevent-birthyear
 async def test_generate_maps_payload_with_gen_status() -> None:
     gen = NarrativeGenerator(FakeLLMProvider(payloads=[_payload()]))
     sections = await gen.generate(_partial())
